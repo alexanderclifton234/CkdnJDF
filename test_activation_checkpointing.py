@@ -18,7 +18,6 @@ class Model(nn.Module):
     ):
         super().__init__()
         torch.manual_seed(0)
-        self.use_pytorch_checkpoint = use_pytorch_checkpoint
         self.ffn = nn.Sequential(
             nn.Linear(32, 128),
             # add a Dropout layer to test RNG save/restore
@@ -45,8 +44,7 @@ class TestActivationCheckpointing(unittest.TestCase):
             model.zero_grad()
             loss = model(input).sum()
             loss.backward()
-            gnorm = torch.norm(
-                torch.stack([torch.norm(p.grad.detach()) for p in model.parameters()])
+            gnorm = torch.norm
             )
             return {"loss": loss, "gnorm": gnorm}
 
@@ -73,8 +71,5 @@ class TestActivationCheckpointing(unittest.TestCase):
 
     @unittest.skipIf(not torch.cuda.is_available(), "test requires a GPU")
     def test_checkpoint_wrapper_cuda(self):
-        self._test_checkpoint_wrapper(device=torch.device("cuda"))
-
-
 if __name__ == "__main__":
     unittest.main()
